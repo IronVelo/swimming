@@ -1,7 +1,5 @@
 # swimming
 
-[![CI](https://github.com/IronVelo/swimming/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IronVelo/swimming/actions/workflows/ci.yml)
-
 `swimming` is a `no_std`, `no_alloc`, high-performance, asynchronous, thread-safe, and fair connection pooling crate for
 Rust. It provides a simple and efficient way to manage and reuse connections in your applications.
 
