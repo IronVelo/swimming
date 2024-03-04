@@ -1,0 +1,31 @@
+[package]
+name = "swimming"
+version = "0.1.0"
+edition = "2021"
+authors = ["Clelland Green <cg@ironvelo.com>"]
+keywords = ["no_std", "no_alloc", "non-blocking", "embedded", "pool"]
+categories = ["concurrency", "asynchronous", "no-std::no-alloc", "no-std", "network-programming"]
+description = "Dive into Efficiency with Swimming: A High-Performance, No-Nonsense Connection Pool"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/IronVelo/swimming"
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+    "README.md"
+]
+
+[features]
+std = ["lock_pool/std"]
+alloc = ["lock_pool/alloc"]
+
+[dependencies]
+lock_pool = "0.2.0"
+
+[dev-dependencies]
+futures = "0.3.30"
+
+[package.metadata.docs.rs]
+all-features = true
+targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = ["--cfg", "doc_cfg", "--generate-link-to-definition"]
