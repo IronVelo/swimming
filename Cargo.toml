@@ -1,6 +1,6 @@
 [package]
 name = "swimming"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Clelland Green <cg@ironvelo.com>"]
 keywords = ["connection-pooling", "no_std", "non-blocking", "embedded", "pool"]

@@ -21,7 +21,7 @@ To use `swimming` in your Rust project, add the following to your `Cargo.toml` f
 
 ```toml
 [dependencies]
-swimming = "0.1.0"
+swimming = "0.1.1"
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ swimming = "0.1.0"
 Here's a simple example of how to use `swimming`:
 ```rust
 use swimming::{Pool, Connection};
-use core::net::SocketAddr;
+use std::net::SocketAddr;
 
 struct MyConnection;
 
@@ -50,7 +50,7 @@ impl Connection for MyConnection {
     }
 }
 
-async fn main() {
+async fn example() {
     // create the pool providing the context, in general usage this would be details primarily pertinent to creating
     // the connection. 
     let pool = Pool::<MyConnection, 10>::new("127.0.0.1:8080".parse().unwrap());
