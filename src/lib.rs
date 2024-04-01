@@ -197,6 +197,22 @@ impl<'pool, Conn, const SIZE: usize> DerefMut for LiveConn<'pool, Conn, SIZE> {
     }
 }
 
+impl<'pool, Conn, const SIZE: usize> AsRef<Conn> for LiveConn<'pool, Conn, SIZE> {
+    #[inline]
+    fn as_ref(&self) -> &Conn {
+        // SAFETY: For a `LiveConn` to exist it must be initialized
+        unsafe { self.guard.conn.as_ref().unwrap_unchecked() } 
+    }
+}
+
+impl<'pool, Conn, const SIZE: usize> AsMut<Conn> for LiveConn<'pool, Conn, SIZE> {
+    #[inline]
+    fn as_mut(&mut self) -> &mut Conn {
+        // SAFETY: For a `LiveConn` to exist it must be initialized
+        unsafe { self.guard.conn.as_mut().unwrap_unchecked() }
+    }
+}
+
 pub struct Pool<Conn: Connection, const SIZE: usize> {
     pool: LockPool<LazyConn<Conn>, SIZE, MAX_WAITERS>,
     ctx: Conn::Context
