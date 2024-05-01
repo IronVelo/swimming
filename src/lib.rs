@@ -151,6 +151,11 @@ impl<Conn> LazyConn<Conn> {
     pub fn get_mut(&mut self) -> Option<&mut Conn> {
         self.conn.as_mut()
     }
+    
+    #[inline]
+    pub fn replace(&mut self, new: Conn) -> Option<Conn> {
+        self.conn.replace(new)
+    }
 
     #[inline]
     pub fn expire(&mut self) {
@@ -394,7 +399,41 @@ impl<Conn: Connection + Send + Sync, const SIZE: usize> Pool<Conn, SIZE> {
             ctx
         })
     }
-
+    
+    /// # Insert Connection
+    ///
+    /// This function will attempt to place the provided `conn` into the first available slot in the
+    /// connection pool. If a connection already exists in the chosen slot, it will be replaced.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `conn` - The connection to insert
+    /// 
+    /// # Returns
+    /// 
+    /// - `Some(Conn)`: The insert operation replaced an existing connection, the existing 
+    ///                 connection is returned.
+    /// - `None`: The insert operation happened on an uninitialized slot, no connection is returned.
+    /// 
+    /// # Use Case
+    /// 
+    /// Say you're implementing a simple http client with connection pooling for http 1.1 and 
+    /// sharing the multiplexed h2 connection.
+    ///
+    /// In this scenario you would find out you're taking the pool approach after the initialization
+    /// of the connection (as h2 is agreed upon during the TLS handshake). Without this method
+    /// you'd be left with two options:
+    /// 
+    /// - Drop the connection and opt for lazy initialization.
+    /// - Eagerly initialize the pool with the connection in one of the slots.
+    /// 
+    /// If neither of these options are appealing, you can simply lazily initialize the pool and
+    /// `insert` the existing connection.
+    pub async fn insert(&self, conn: Conn) -> Option<Conn> {
+        let mut maybe_conn = maybe_await!(self.pool.get());
+        maybe_conn.replace(conn)
+    }
+    
     /// # Get Connection
     ///
     /// Asynchronously returns a healthy connection from the pool. If all connections are in use,
@@ -990,5 +1029,20 @@ mod tests {
         assert!(conn.get().is_some());
         conn.expire();
         assert!(conn.get().is_none());
+    }
+    
+    #[test]
+    fn insert() {
+        let fut = async {
+            let pool: Pool<Conn<usize>, 1> = Pool::default();
+            let mut conn = Conn::<usize>::new();
+            conn.inner = 400;
+            pool.insert(conn).await;
+            
+            let conn = pool.get().await.unwrap();
+            assert_eq!(conn.inner, 400);
+        };
+
+        block_on(fut);
     }
 }

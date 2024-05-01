@@ -19,7 +19,7 @@ To use `swimming` in your Rust project, add the following to your `Cargo.toml` f
 
 ```toml
 [dependencies]
-swimming = "0.1.2"
+swimming = "0.1.3"
 ```
 
 ## Usage
